@@ -1,0 +1,71 @@
+<datawarrior-fileinfo>
+<version="3.3">
+<created="1674652430067">
+<rowcount="1">
+</datawarrior-fileinfo>
+<column properties>
+<columnName="Structure">
+<columnProperty="specialType	idcode">
+<columnName="idcoordinates3D">
+<columnProperty="parent	Structure">
+<columnProperty="specialType	idcoordinates3D">
+<columnName="FragFp">
+<columnProperty="parent	Structure">
+<columnProperty="specialType	FragFp">
+<columnProperty="version	1.2.1">
+</column properties>
+idcoordinates3D	FragFp	Structure	Structure No
+#q_ng_yKUxUzOQCrW~`umYF^lxOHrJPLVa]Wn\^VwDUALTK{{AN`l@@CWQPfm|Ok}_mlQBdOaAiqYMpqssQoG|WOlLzdIgwhOdVCrXXV{KSVvOVsvaRiNnJRRlF?tM[lnT]bKA_oz[bDN^JvbabKtNyO_~RxIa@UOk[~ttIF?~K_qr?o^TqriP@\@AL@@	placeholder	deV@@@rQQIFTpDEP@@	1
+<datawarrior properties>
+<axisColumn_2D View_0="<unassigned>">
+<axisColumn_2D View_1="<unassigned>">
+<axisColumn_3D View_0="<unassigned>">
+<axisColumn_3D View_1="<unassigned>">
+<axisColumn_3D View_2="<unassigned>">
+<chartType_2D View="scatter">
+<chartType_3D View="scatter">
+<columnFilter_Table="">
+<columnWidth_Table_Structure="100">
+<columnWidth_Table_Structure No="80">
+<crosshairList_2D View="">
+<detailView="height[Data]=0.33333;height[Structure]=0.33333;height[3D-Structure]=0.33333">
+<faceColor3D_3D View="-1250054">
+<fastRendering_2D View="false">
+<fastRendering_3D View="false">
+<filter0="#structure#	Structure">
+<headerLines_Table="2">
+<mainSplitting="0.70688">
+<mainView="Structures">
+<mainViewCount="4">
+<mainViewDockInfo0="root">
+<mainViewDockInfo1="Table	bottom	0.5">
+<mainViewDockInfo2="Table	right	0.5">
+<mainViewDockInfo3="2D View	right	0.5">
+<mainViewName0="Table">
+<mainViewName1="2D View">
+<mainViewName2="Structures">
+<mainViewName3="3D View">
+<mainViewType0="tableView">
+<mainViewType1="2Dview">
+<mainViewType2="structureView">
+<mainViewType3="3Dview">
+<rightSplitting="0.64035">
+<rotationMatrix_3D View00="1">
+<rotationMatrix_3D View01="0">
+<rotationMatrix_3D View02="0">
+<rotationMatrix_3D View10="0">
+<rotationMatrix_3D View11="1">
+<rotationMatrix_3D View12="0">
+<rotationMatrix_3D View20="0">
+<rotationMatrix_3D View21="0">
+<rotationMatrix_3D View22="1">
+<rowHeight_Table="80">
+<scaleStyle_2D View="frame">
+<scaleStyle_3D View="arrows">
+<scatterplotMargin_2D View="0.025">
+<scatterplotMargin_3D View="0.025">
+<showNaNValues_2D View="true">
+<showNaNValues_3D View="true">
+<structureGridColumn_Structures="Structure">
+<structureGridColumns_Structures="6">
+</datawarrior properties>

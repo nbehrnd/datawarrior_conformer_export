@@ -1,0 +1,132 @@
+# name:   readme.org
+# author: nbehrnd@yaho.com
+# date:   [2023-01-25 Wed]
+# edit:
+
+* intent
+
+  DataWarrior's 3D structure window allows the export of a conformer
+  structure into an other instance of DataWarrior with its own file
+  format.  This Python script offers eventual access to export the
+  conformer as a 3d ~.sdf~ file.  For this, copy & paste the string
+  enclosed in single quotes to a command like
+
+  #+begin_src shell
+    python3 ./datawarrior_conformer_export.py 'eMHAIh@ #qxnjsbG[f@@CV?bpATlYqSQ^brHTcidvtKPTLXdhCNwimWYdBEohCvWAKGohzuBAvythT@H`@h@@'
+  #+end_src
+
+  to write a new file ~container.dwar~.  From there, the export into
+  other data formats proceeds as usual (File -> Save Special -> SD
+  File) with the option "Atom coordinates" on level "3D Structure".
+
+* cross check
+
+  DataWarrior may import and export structures as ~.sdf~ file.  Though
+  preference is given to the v3000 dialect (e.g., extended
+  sterochemical descriptors), DataWarror equally supports ~.sdf~ in
+  the more senior v2000 dialect.  On may argue that this renders a
+  comparison of structures read by DW and exported without further
+  computation is difficult because a ~diff -s~ for an input and output
+  file of such a round-trip edit unlikely reports the two to be
+  identical.
+
+  The /equivalence/ of an input and output file's structure model of
+  the round-trip edit however may be assessed by a superposition of
+  the two models and subsequent quantification of the remaining
+  difference (error) of e.g., a Kabsch test.
+
+** numeric check
+   :PROPERTIES:
+   :ID:       e559bbab-85bb-486c-837b-aa5cc1656909
+   :END:
+
+   Jimmy Kromann provides with [[https://github.com/charnley/rmsd][rmsd]] an implementation of the Kabsch
+   test in Python.  Hence, with an alkylated pyridine prepared by
+   openbabel by
+
+   #+begin_src shell 
+     obabel -:"c1cccnc1CC(C)C" -h --gen3d -O pyridine.sdf
+   #+end_src
+
+   for which DW's 3D structure window reports a 3D molecule string of
+
+   #+begin_src shell
+     deV@@@rQQIFTpDEP@@ #q_ng_yKUxUzOQCrW~`umYF^lxOHrJPLVa]Wn\^VwDUALTK{{AN`l@@CWQPfm|Ok}_mlQBdOaAiqYMpqssQoG|WOlLzdIgwhOdVCrXXV{KSVvOVsvaRiNnJRRlF?tM[lnT]bKA_oz[bDN^JvbabKtNyO_~RxIa@UOk[~ttIF?~K_qr?o^TqriP@\@AL@@
+   #+end_src
+
+   a run by
+
+   #+begin_src shell
+     python3 ./datawarrior_conformer_export.py 'deV@@@rQQIFTpDEP@@ #q_ng_yKUxUzOQCrW~`umYF^lxOHrJPLVa]Wn\^VwDUALTK{{AN`l@@CWQPfm|Ok}_mlQBdOaAiqYMpqssQoG|WOlLzdIgwhOdVCrXXV{KSVvOVsvaRiNnJRRlF?tM[lnT]bKA_oz[bDN^JvbabKtNyO_~RxIa@UOk[~ttIF?~K_qr?o^TqriP@\@AL@@'
+   #+end_src
+
+   provides the new file ~container.dwar~.  DataWarrior was used to
+   export a 3D .sdf (v3000), ~container.sdf~.
+
+   To perform the Kabsch test with Kroman's ~rmsd~, both files were
+   converted into the ~.xyz~ format, then submitted:
+
+   #+begin_src shell :results raw export: both
+     obabel pyridine.sdf container.sdf -oxyz -m
+     calculate_rmsd --version
+     calculate_rmsd pyridine.xyz container.xyz --reorder --ignore-hydrogen
+   #+end_src
+
+   #+RESULTS:
+   rmsd 1.4
+
+   See https://github.com/charnley/rmsd for citation information
+   0.00018934229951811363
+   rmsd 1.4
+
+   See https://github.com/charnley/rmsd for citation information
+   0.00018934229951811363
+
+   Hence, the differences are tiny.
+
+** visual check
+   :PROPERTIES:
+   :ID:       7a34defb-5a88-4c25-b3cc-a02ef3b3169f
+   :END:
+
+   Kroman's implementation allows the export of the aligned structure
+   using the coordinate system of the reference structure.  Since Jmol
+   allows the simultaneous display of two model structures, the visual
+   inspection complements the numeric analysis.
+
+   Input to the Kabsch test /excluding/ hydrogen atoms:
+
+   #+begin_src shell :results raw :export both
+     obabel pyridine.sdf container.sdf -oxyz -d -m
+     calculate_rmsd pyridine.xyz container.xyz --reorder --print > aligned.xyz
+     cat aligned.xyz
+   #+end_src
+
+   #+RESULTS:
+   10
+   container.xyz - modified
+   C       0.35570828      0.86800636      1.06310876
+   C       1.09097117     -0.31531775      1.02754367
+   C       0.86860443     -1.23266545      0.00520099
+   C      -0.09602217     -0.92468635     -0.93497857
+   N      -0.80828767      0.22183497     -0.93861240
+   C      -0.56882272      1.11868051      0.05283072
+   C      -1.37138623      2.39920170     -0.00470679
+   C      -0.55255137      3.70337063     -0.12360747
+   C       0.32610194      3.74147740     -1.37664305
+   C      -1.49571565      4.91319798     -0.14523585
+
+   Commands issued to Jmol's console (version 14.32.79):
+
+   #+begin_src js
+     load files "pyridine.xyz" "aligned.xyz";
+     model 0;
+     select model=1.1;
+     color red;
+     select model=2.1;
+     color blue;
+     compare {1.1}{2.1} atoms rotate translate;
+     write "superposition.png";
+   #+end_src
+
+   which equally reports an error of alignment of less than 0.0.
