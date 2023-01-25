@@ -77,10 +77,6 @@
 
    See https://github.com/charnley/rmsd for citation information
    0.00018934229951811363
-   rmsd 1.4
-
-   See https://github.com/charnley/rmsd for citation information
-   0.00018934229951811363
 
    Hence, the differences are tiny.
 
