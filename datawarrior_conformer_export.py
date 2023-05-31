@@ -1,74 +1,78 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# name:     datawarrior_conformer_export.py
+# author:   nbehrnd@yahoo.com
+# license:  GPL v2
+# date:     [2023-01-25 Wed]
+# edit:     <2023-05-31 Wed>
+
 """Access the 3D conformation from DW's 3D-Structure window.
 
 Background:
 The present version of DataWarrior displays conformations, alignments, etc in
-an interactve 3D-Structure window.  From there, a double click on the molecule
-of interest allows to copy-paste the conformation into a new instance of DW / an
-empty structure cell though apparently not always as a 3D structure.
+an interactive 3D-structure window.  From there, a double click on the molecule
+of interest allows to copy-paste the conformation into a new instance of DW /
+an empty structure cell though apparently not always as a 3D structure.
 
 The 'copy Molecule (3D)' of the window '3D structure' allows to copy-paste the
 conformer information as a string into a text editor.  The information in this
-string actually includes the 3D coordinates and additional data (e.g. how DW can
-display the structure in the array) though the sequence of entries needs some
-adjustment this script provides when writing a new 'container.dwar' (only) for
-an export to 3D .sdf from DW.
+string actually includes the 3D coordinates and additional data (e.g. how DW
+can display the structure in the array) though the sequence of entries needs
+some adjustment this script provides when writing a new 'container.dwar' (only)
+for an export to 3D .sdf from DW.
 
 Use:
-The script was written for and is tested with Python 3.10.9 as provided e.g., by
-Linux Debian 12/bookworm (branch testing).  Only modules of the standard library
-are used.  There are no additional dependencies.
+The script was written for and is tested with Python 3.10.9 as provided e.g.,
+by Linux Debian 12/bookworm (branch testing).  Only modules of the standard
+Python library are used.  There are no additional dependencies.
 
 For ethanol, the 3D molecule string from the 3D structure window is e.g.,
 
 eMHAIh@ #qxnjsbG[f@@CV?bpATlYqSQ^brHTcidvtKPTLXdhCNwimWYdBEohCvWAKGohzuBAvythT@H`@h@@
 
-This string may contain characters with a special meaning to the shell.  It
-consists of two data (sketcher structure and encoded coordinates) separated by a
-space.  Hence it is necessary to enclose the string by single quotes to
-explicitly indicate the start and the end of the input.  For the above, run the
-following command (a one line command):
+Such a string may contain characters with a special meaning to the shell, and
+can launch an unwanted action.  It consists of two data (sketcher structure and
+encoded coordinates) separated by a space.  These are the reasons why it is
+necessary to enclose the string by single quotes to explicitly indicate the
+start and the end of the input.  For the above, run the following command (on
+one line):
 
 python3 ./datawarrior_conformer_export.py 'eMHAIh@ #qxnjsbG[f@@CV?bpATlYqSQ^brHTcidvtKPTLXdhCNwimWYdBEohCvWAKGohzuBAvythT@H`@h@@'
 
 which will write file 'container.dwar'.  Read this new file with DataWarrior,
 and export the structure as usually (File -> Save Special -> SD File) with the
-option "Atom coordinates" on level "3D Structure".
-
-(One can set an alias in ~/.bashrc for a shorter call sign of the script.)
-"""
-# name:     datawarrior_conformer_export.py
-# author:   nbehrnd@yahoo.com
-# license:  GPL v2
-# date:     [2023-01-25 Wed]
-# edit:
+option "Atom coordinates" on level "3D Structure"."""
 
 import argparse
 import sys
+import time
 
 
-def collect_input():
+def get_args():
     """collect the input, provide initial help"""
 
     parser = argparse.ArgumentParser(
-        description="""Based on DW's Molecule 3D string, this script writes file
-'container.dwar' to provide an eventual structure export as a (3D) .sdf file.
-The script processes only one string at a time.  Note, earlier versions of file
-'container.dwar' in the currently used folder are going to be overwritten.""")
+        description="""Based on DW's Molecule 3D string, this script writes
+file `container.dwar` to provide an eventual structure export as a (3D) .sdf
+file. The script processes only one string at a time.  Note, earlier versions
+of file `container.dwar` in the currently used working directory are going to
+be overwritten.""",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
     parser.add_argument(
-        'input_dw',
-        help=
-        """Copy-paste the DW string Molecule 3D (window 3D-Structure).  In the
-present implementation, the string must be enclosed in single quotes (double
-quotes do not work here) to explicitly indicate to the shell the start and end
-of the string to process.""")
-    args = parser.parse_args()
-    return args.input_dw
+        'input_string',
+        help="""Copy-paste the DW string Molecule 3D from the window displaying
+the 3D structure.  In the present implementation of this script, the string
+must be enclosed in single quotes to explicitly indicate to the shell the start
+and end of the string to process.  The script will not work if the input string
+is enclosed in double quotes instead of single quotes.""")
+
+    return parser.parse_args()
 
 
-def rearrange_string():
+def rearrange_string(input_string):
     """adjust the sequence of the entries the input provides"""
-    input_string = collect_input()
     input_structure = input_string.split()[0]
     input_3d = input_string.split()[1]
 
@@ -78,19 +82,23 @@ def rearrange_string():
     return report
 
 
-def write_new_dwar(structure=""):
+def write_new_dwar(structure_line=""):
     """provide 'container.dwar' for the export to .sdf
 
-    Because the purpose of 'container.dwar' only is to provide an export
-    to a 3d .sdf by DataWarrior, it does not matter that the blocks prior
-    and after the variable structure report is fix and extracted from an
-    other minimal .dwar file.  If there already is a file of name
-    'container.dwar' (by a previous run), this export however is going to
-    substitute the old file by a/the new one."""
+    The new file two write consists of three parts
 
-    leading_block = """<datawarrior-fileinfo>
+    + a leading block, provided with an automatically adjusted time stamp
+      Following DW's pattern, the insert is the UNIX epoch time in line of
+      time of creating the .dwar file.
+    + the by now rearranged line including DW's idcode about the conformer
+    + a trailing block, which is invariant to local time and structure
+
+    The two blocks are defined, followed by the concatenated output which
+    is returned."""
+
+    leading_block = str(f"""<datawarrior-fileinfo>
 <version="3.3">
-<created="1674652430067">
+<created="{int( time.time() )}">
 <rowcount="1">
 </datawarrior-fileinfo>
 <column properties>
@@ -104,7 +112,7 @@ def write_new_dwar(structure=""):
 <columnProperty="specialType	FragFp">
 <columnProperty="version	1.2.1">
 </column properties>
-idcoordinates3D	FragFp	Structure	Structure No"""
+idcoordinates3D	FragFp	Structure	Structure No""")
 
     trailing_block = """<datawarrior properties>
 <axisColumn_2D View_0="<unassigned>">
@@ -163,22 +171,24 @@ idcoordinates3D	FragFp	Structure	Structure No"""
     export_string = ""
     export_string += leading_block
     export_string += "\n"
-    export_string += structure
+    export_string += structure_line
     export_string += "\n"
     export_string += trailing_block
 
     try:
-        with open("container.dwar", mode="w", encoding='UTF-8') as newfile:
+        with open("container.dwar", mode="wt", encoding='UTF-8') as newfile:
             newfile.write(export_string)
     except IOError:
-        print("It was impossible to write file 'test.dwar'.  Exit.")
+        print("It was impossible to write file 'container.dwar'.  Exit.")
         sys.exit()
 
 
 def main():
     """joining functions"""
-    insert = rearrange_string()
-    write_new_dwar(structure=insert)
+    args = get_args()
+
+    insert = rearrange_string(args.input_string)
+    write_new_dwar(structure_line=insert)
 
 
 if __name__ == '__main__':
