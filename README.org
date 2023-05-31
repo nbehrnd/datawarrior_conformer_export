@@ -1,4 +1,4 @@
-# name:   readme.org
+# name:   README.org
 # author: nbehrnd@yaho.com
 # date:   [2023-01-25 Wed]
 # edit:   <2023-05-31 Wed>
