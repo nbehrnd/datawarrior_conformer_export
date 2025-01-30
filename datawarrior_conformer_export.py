@@ -5,7 +5,7 @@
 # author:   nbehrnd@yahoo.com
 # license:  GPL v2
 # date:     [2023-01-25 Wed]
-# edit:     <2023-05-31 Wed>
+# edit:     [2025-01-30 Thu]
 
 """Access the 3D conformation from DW's 3D-Structure window.
 
