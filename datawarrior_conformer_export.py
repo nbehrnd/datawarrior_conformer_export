@@ -5,7 +5,7 @@
 # author:   nbehrnd@yahoo.com
 # license:  GPL v2
 # date:     [2023-01-25 Wed]
-# edit:     <2023-05-31 Wed>
+# edit:     [2025-01-30 Thu]
 
 """Access the 3D conformation from DW's 3D-Structure window.
 
@@ -58,15 +58,17 @@ file `container.dwar` to provide an eventual structure export as a (3D) .sdf
 file. The script processes only one string at a time.  Note, earlier versions
 of file `container.dwar` in the currently used working directory are going to
 be overwritten.""",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
     parser.add_argument(
-        'input_string',
+        "input_string",
         help="""Copy-paste the DW string Molecule 3D from the window displaying
 the 3D structure.  In the present implementation of this script, the string
 must be enclosed in single quotes to explicitly indicate to the shell the start
 and end of the string to process.  The script will not work if the input string
-is enclosed in double quotes instead of single quotes.""")
+is enclosed in double quotes instead of single quotes.""",
+    )
 
     return parser.parse_args()
 
@@ -96,7 +98,8 @@ def write_new_dwar(structure_line=""):
     The two blocks are defined, followed by the concatenated output which
     is returned."""
 
-    leading_block = str(f"""<datawarrior-fileinfo>
+    leading_block = str(
+        f"""<datawarrior-fileinfo>
 <version="3.3">
 <created="{int( time.time() )}">
 <rowcount="1">
@@ -112,7 +115,8 @@ def write_new_dwar(structure_line=""):
 <columnProperty="specialType	FragFp">
 <columnProperty="version	1.2.1">
 </column properties>
-idcoordinates3D	FragFp	Structure	Structure No""")
+idcoordinates3D	FragFp	Structure	Structure No"""
+    )
 
     trailing_block = """<datawarrior properties>
 <axisColumn_2D View_0="<unassigned>">
@@ -176,7 +180,7 @@ idcoordinates3D	FragFp	Structure	Structure No""")
     export_string += trailing_block
 
     try:
-        with open("container.dwar", mode="wt", encoding='UTF-8') as newfile:
+        with open("container.dwar", mode="wt", encoding="UTF-8") as newfile:
             newfile.write(export_string)
     except IOError:
         print("It was impossible to write file 'container.dwar'.  Exit.")
@@ -191,5 +195,5 @@ def main():
     write_new_dwar(structure_line=insert)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
